@@ -1,14 +1,27 @@
 import { Server } from 'socket.io';
 
 class SocketService {
-  private _io: Server;
+  private static _io: Server;
 
   constructor() {
     console.log('Init Socket Service...');
-    this._io = new Server();
+    SocketService._io = new Server();
   }
 
-  get io(): Server {
+ 
+  public static initListeners() {
+    const io = SocketService._io;
+    console.log('Init Socket Listeners...');
+    io.on('connect', (socket) => {
+      console.log('New Socket Connected', socket.id);
+
+      socket.on('event:message', async ({ message }: { message: string }) => {
+        console.log('New message received', message);
+      });
+    });
+  }
+
+  public static get io(): Server {
     return this._io;
   }
 }
